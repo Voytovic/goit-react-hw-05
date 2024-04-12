@@ -1,0 +1,29 @@
+.searchBar {
+  padding: 7px;
+  width: 400px;
+  padding-left: 50px;
+  border-radius: 5px;
+  border: 3px solid #537072;
+  outline: transparent;
+}
+.header {
+  background-image: linear-gradient(to right, #ff6b6b, #76ead7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  border-radius: 15px;
+  border: 2px solid black;
+}
+.form {
+  position: relative;
+}
+.button {
+  position: absolute;
+  left: 1px;
+  top: 45%;
+  transform: translateY(-45%);
+  color: white;
+  background-color: red;
+  border-radius: 10%;
+}
