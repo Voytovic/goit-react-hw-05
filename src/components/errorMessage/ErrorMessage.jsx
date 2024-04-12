@@ -1,5 +1,3 @@
-export default function ErrorMessage () {
-    return (
-        <b>Whoops, something went wrong</b>
-    )
-}
+export default function ErrorMessage() {
+    return <strong>Oops, something went wrong. Try refreshing the page.</strong>;
+  }

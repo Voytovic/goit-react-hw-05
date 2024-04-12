@@ -1,88 +1,35 @@
-// app.jsx
+import { Routes, Route } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import NotFoundPage from "./pages/notFoundPages/NotFoundPage";
+import Navigation from "./components/navigation/navigation";
+import ccs from "../src/App.css";
 
-import { useState, useEffect } from 'react';
-import { SearchBar } from './components/searchBar/SearchBar';
-import { fetchImg } from './components/services/Api';
-import './App.css';
 
-import { ImageGallery } from './components/imageGallery/ImageGallery';
-import { Loader } from './components/loader/Loader';
-import ErrorMessage from './components/errorMessage/ErrorMessage';
-import { Toaster } from 'react-hot-toast';
-import LoadMoreButton from './components/loadMoreBtn/LoadMoreBtn';
-import { ImageModal } from './components/imageModal/ImageModal';
-
-function App() {
-  const [query, setQuery] = useState('');
-  const [page, setPage] = useState(1);
-  const [img, setImg] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-
-  const openModal = item => {
-    setSelectedItem(item);
-    setModalIsOpen(true);
-  };
-
-  const closeModal = () => {
-    setModalIsOpen(false);
-  };
-
-  const searchImg = async newQuery => {
-    setQuery(newQuery);
-    setPage(1);
-    setImg([]);
-  };
-
-  const handleLoadMore = () => {
-    setPage(page + 1);
-  };
-
-  useEffect(() => {
-    if (query === '') {
-      return;
-    }
-
-    async function fetchData() {
-      try {
-        setLoading(true);
-        setError(false);
-        const fetchedData = await fetchImg(query, page);
-
-        setImg(prevImg => [...prevImg, ...fetchedData.results]);
-
-        setIsVisible(fetchedData.total_pages > page);
-      } catch (error) {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, [query, page]);
-
+const HomePage = lazy(() => import("./pages/homePage/HomePage"));
+const MoviesPage = lazy(() => import("./pages/moviesPage/MoviePage"));
+const MovieDetailsPage = lazy(() =>
+  import("./pages/movieDetailsPage/MovieDetailsPage")
+);
+const MovieCast = lazy(() => import("./components/movieCast/MovieCast"));
+const MovieReviews = lazy(() => import("./components/movieReviews/MoviesReviews"));
+const App = () => {
   return (
-    <>
-      <SearchBar onSubmit={searchImg} />
-      {error && <ErrorMessage />}
-      {img.length > 0 && <ImageGallery items={img} openModal={openModal} />}
-      {loading && <Loader />}
-      {img.length > 0 && !loading && isVisible && (
-        <LoadMoreButton onClick={handleLoadMore} />
-      )}
-      <Toaster position="bottom-center" />
-      {modalIsOpen && selectedItem && (
-        <ImageModal
-          item={selectedItem}
-          isOpen={modalIsOpen}
-          closeModal={closeModal}
-        />
-      )}
-    </>
+    <div className={css.appContainer}>
+      <Navigation />
+
+      <Suspense fallback={<b>Loading...</b>}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/movies" element={<MoviesPage />} />
+          <Route path="/movies/:movieId" element={<MovieDetailsPage />}>
+            <Route path="cast" element={<MovieCast />} />
+            <Route path="reviews" element={<MovieReviews />} />
+          </Route>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
+    </div>
   );
-}
+};
 
 export default App;
