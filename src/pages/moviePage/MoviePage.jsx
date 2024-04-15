@@ -1,25 +1,24 @@
-
-import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { getMoviesByName } from "../../components/config";
-import MovieList from "../../components/movieList/MovieList";
-import MovieSearch from "../../components/movieSearch/MovieSearch";
-import Loader from "../../components/loader/Loader";
-import ErrorMessage from "../../components/errorMessage/ErrorMessage";
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { getMoviesByName } from '../../components/config';
+import MovieList from '../../components/movieList/MovieList';
+import MovieSearch from '../../components/movieSearch/MovieSearch';
+import Loader from '../../components/loader/Loader';
+import ErrorMessage from '../../components/errorMessage/ErrorMessage';
 
 const MoviesPage = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const queryParam = searchParams.get("query") ?? "";
+  const queryParam = searchParams.get('query') ?? '';
 
   function updateQueryParams(query) {
-    const params = query !== "" ? { query } : {};
+    const params = query !== '' ? { query } : {};
     setSearchParams(params);
   }
   useEffect(() => {
-    if (queryParam === "") {
+    if (queryParam === '') {
       return;
     }
     async function fetchMoviesByName() {
