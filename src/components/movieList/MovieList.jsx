@@ -1,19 +1,28 @@
-import { Link, useLocation } from "react-router-dom";
+import { NavLink, useLocation } from 'react-router-dom';
+import css from './MovieList.module.css';
 
-const MovieList = ({ movies }) => {
+export default function MovieList({ movies }) {
   const location = useLocation();
 
   return (
-    <ul>
-      {movies.map((movie) => (
-        <li key={movie.id}>
-          <Link to={`/movies/${movie.id}`} state={{ from: location }}>
-            {movie.title}
-          </Link>
-        </li>
-      ))}
-    </ul>
+    <div>
+      <ul className={css['movie-list']}>
+        {movies.map(movie => (
+          <li key={movie.id}>
+            <NavLink
+              to={`/movies/${movie.id}`}
+              state={{ from: location }}
+              className={css['movie-link']}
+            >
+              <img
+                src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
+                alt={movie.title}
+              />
+              {movie.title}
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
-};
-
-export default MovieList;
+}

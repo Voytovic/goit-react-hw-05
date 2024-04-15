@@ -1,51 +1,61 @@
-import css from './MovieCast.module.css';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getMovieCast } from '/src/components/config';
-import MovieCastItem from '../movieCastItem/MovieCastItem';
-import Loader from '../loader/Loader';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+import axios from 'axios';
+import img from '../../png/no-photo.png';
+import css from './MovieCast.module.css';
 
-const MovieCast = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+export default function MovieCast() {
+  const [cast, setCast] = useState([]);
+  const [error, setError] = useState(null);
   const { movieId } = useParams();
-  const [actors, setActors] = useState([]);
 
   useEffect(() => {
     const fetchMovieCast = async () => {
       try {
-        setLoading(true);
-        setError(false);
-        const cast = await getMovieCast(movieId);
-        setActors(cast.slice(0, 3));
-        console.log(cast);
+        const res = await axios.get(
+          `https://api.themoviedb.org/3/movie/${movieId}/credits?language=en-US`,
+          {
+            headers: {
+              Authorization:
+                'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJkNDgzODY3OGExZDhkMmIwZThiYmU4MGM3MjliMmNkNSIsInN1YiI6IjY2MTkxYjkwNmYzMWFmMDE3YzliMmFiZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.nQdCjUvk86a1tHv4FUZkpncsarCOQML0kFzDc1znlbo',
+              accept: 'application/json',
+            },
+          }
+        );
+        setCast(res.data.cast);
       } catch (error) {
-        setError(true);
-      } finally {
-        setLoading(false);
+        console.log(error);
+        setError('Ooops, something went wrong', error);
       }
     };
+
     fetchMovieCast();
   }, [movieId]);
 
-  return (
-    <>
-      {actors.length > 0 ? (
-        <ul className={css.actorList}>
-          {actors.map(actor => (
-            <li key={actor.id} className={css.actorListItem}>
-              <MovieCastItem actor={actor} />
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>Information about actors is not available.</p>
-      )}
-      {loading && <Loader />}
-      {error && <ErrorMessage />}
-    </>
-  );
-};
+  if (error) {
+    return <div>{error}</div>;
+  }
 
-export default MovieCast;
+  return (
+    <div>
+      <h2 className={css['casts-title']}>Casts</h2>
+      <ul className={css['cast-list']}>
+        {cast.map((actor, idx) => (
+          <li key={idx}>
+            <div className={css['cast-info']}>
+              {actor.profile_path ? (
+                <img
+                  src={`https://image.tmdb.org/t/p/w200/${actor.profile_path}`}
+                  alt={actor.name}
+                />
+              ) : (
+                <img src={img} className={css['no-photo-img']} />
+              )}
+              {actor.name}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}

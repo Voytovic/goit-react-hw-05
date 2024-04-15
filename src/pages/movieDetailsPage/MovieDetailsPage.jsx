@@ -1,89 +1,100 @@
+import { useEffect, useState, useRef } from 'react';
+import axios from 'axios';
+import {
+  useParams,
+  Outlet,
+  NavLink,
+  Link,
+  useLocation,
+} from 'react-router-dom';
+import Loader from '../../components/loader/Loader';
+import css from './MovieDetailsPage.module.css';
 
-import css from "./MovieDetailsPage.module.css";
-import clsx from "clsx";
-import { useEffect, useState, Suspense } from "react";
-import { useParams, Outlet, NavLink, useLocation } from "react-router-dom";
-
-import Loader from "../../components/loader/Loader";
-import ErrorMessage from "../../components/errorMessage/ErrorMessage";
-import { getMovieDetails } from "../../components/config";
-
-const MovieDetailsPage = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [movieDetails, setMovieDetails] = useState(null);
+export default function MovieDetailsPage() {
+  const [movie, setMovie] = useState({});
   const { movieId } = useParams();
   const location = useLocation();
-
-  function buildLinkClass({ isActive }) {
-    return clsx(css.infoLink, {
-      [css.active]: isActive,
-    });
-  }
+  const backLinkRef = useRef(null);
 
   useEffect(() => {
-    async function fetchMovieDetails() {
+    const fetchMovieDetails = async () => {
       try {
-        setLoading(true);
-        setError(false);
-        const details = await getMovieDetails(movieId);
-        setMovieDetails(details);
+        const response = await axios.get(
+          `https://api.themoviedb.org/3/movie/${movieId}?language=en-US`,
+          {
+            headers: {
+              Authorization:
+                'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJmMjA5ZTFiOTkwNzgyNWYyODAxYzZjY2VhNjI2OTY2YiIsInN1YiI6IjY1ZmIzZTg5NzcwNzAwMDE3YzA3MTAxYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.tZhisAEz8ENxy4QWWhtgfqFY2KAaerZZjXQ_pHK-Gao',
+              accept: 'application/json',
+            },
+          }
+        );
+        setMovie(response.data);
       } catch (error) {
-        setError(true);
-      } finally {
-        setLoading(false);
+        console.error('Error:', error);
+        throw error;
       }
-    }
-
+    };
     fetchMovieDetails();
-  }, [movieId, setLoading, setError, location]);
+  }, [movieId]);
+
+  useEffect(() => {
+    if (backLinkRef.current) {
+      backLinkRef.current.focus();
+    }
+  }, [location]);
+
+  if (!movie || !movie.title) {
+    return <Loader />;
+  }
 
   return (
-    <>
-      {movieDetails !== null && (
-        <div className={css.wrapper}>
-          <div>
-            <img
-              src={`https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`}
-              alt={movieDetails.title}
-            />
+    <div className={css['container']}>
+      <Link
+        to={location.state?.from || '/movies'}
+        ref={backLinkRef}
+        className={css['btn-back']}
+      >
+        Back
+      </Link>
+      <div className={css['container-info']}>
+        <img
+          src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
+          alt={movie.title}
+          className={css['img-movie']}
+        />
+        <div className={css['container-details']}>
+          <h2>{movie.title}</h2>
+          <div className={css['overwiew-container']}>
+            <p className={css['overview-title']}>Overview</p>
+            <p>{movie.overview}</p>
           </div>
+          <p>
+            <span className={css['rating-title']}>Average rating:</span>{' '}
+            {movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}
+          </p>
 
-          <div>
-            <h1>{movieDetails.title}</h1>
-            <p>Rating: {movieDetails.vote_average.toFixed(2)}/10</p>
-            <h2>Overview</h2>
-            <p>{movieDetails.overview}</p>
-            <h3>Genres</h3>
-            <p>{movieDetails.genres.map((genre) => genre.name).join(", ")}</p>
-
-            <div>
-              <h3>Movie description</h3>
-              <ul>
-                <li>
-                  <NavLink className={buildLinkClass} to="cast">
-                    Cast
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink className={buildLinkClass} to="reviews">
-                    Reviews
-                  </NavLink>
-                </li>
-              </ul>
-
-              <div>
-                <Suspense fallback={<b>Loading...</b>}>
-                  <Outlet />
-                </Suspense>
-              </div>
-            </div>
-          </div>
+          <p>
+            <span className={css['release-title']}>Release Date:</span>{' '}
+            {movie.release_date}
+          </p>
         </div>
-      )}
-      {loading && movieDetails === null && <Loader />}
-      {error && <ErrorMessage />}
-    </>
+      </div>
+      <div className={css['btn-links']}>
+        <NavLink
+          to={`/movies/${movieId}/cast`}
+          className={css['btn-links-item']}
+        >
+          Cast
+        </NavLink>
+        <NavLink
+          to={`/movies/${movieId}/reviews`}
+          className={css['btn-links-item']}
+        >
+          Reviews
+        </NavLink>
+      </div>
+      <Outlet />
+    </div>
   );
-};
-export default MovieDetailsPage;
+}

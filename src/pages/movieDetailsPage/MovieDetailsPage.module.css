@@ -1,10 +1,77 @@
-.wrapper {
-  display: flex;
-  column-gap: 24px;
+.container {
+  padding: 20px;
 }
 
-.active {
-  color: white;
-  transform: scale(1.1);
-  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+.btn-back {
+  color: black;
+  background-color: #b9b6e1;
+  outline: 2px solid white;
+  border: none;
+  border-radius: 3px;
+  padding: 5px;
+  display: flex;
+  width: 50px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease, outline 0.3s ease;
+}
+
+.btn-back:hover {
+  outline: 2px solid white;
+  background-color: #8b86cf;
+}
+
+.container-info {
+  display: flex;
+  gap: 10px;
+}
+
+.img-movie {
+  width: 500px;
+  border-radius: 10px;
+}
+
+.container-details {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  gap: 20px;
+}
+
+.overwiew-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.overview-title,
+.rating-title,
+.release-title {
+  font-weight: 700;
+}
+
+.btn-links {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-links-item {
+  color: black;
+  background-color: #8b86cf;
+  outline: 2px solid white;
+  border: none;
+  border-radius: 3px;
+  padding: 5px;
+  display: nowrap;
+  max-width: 170px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  transition: background-color 0.3s ease, outline 0.3s ease;
+}
+
+.btn-links-item:hover {
+  outline: 2px solid white;
+  background-color: black;
 }

@@ -1,49 +1,72 @@
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { getMoviesByName } from '../../components/config';
 import MovieList from '../../components/movieList/MovieList';
-import MovieSearch from '../../components/movieSearch/MovieSearch';
+import { useSearchParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import Loader from '../../components/loader/Loader';
-import ErrorMessage from '../../components/errorMessage/ErrorMessage';
+import axios from 'axios';
+import css from './MoviePage.module.css';
 
-const MoviesPage = () => {
+export default function MoviesPage() {
   const [movies, setMovies] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const queryParam = searchParams.get('query') ?? '';
 
-  function updateQueryParams(query) {
-    const params = query !== '' ? { query } : {};
-    setSearchParams(params);
-  }
   useEffect(() => {
-    if (queryParam === '') {
-      return;
+    const query = searchParams.get('search');
+    if (query) {
+      setSearchQuery(query);
+      fetchMovies(query);
     }
-    async function fetchMoviesByName() {
-      try {
-        setLoading(true);
-        setError(false);
-        const findMovies = await getMoviesByName(queryParam);
-        setMovies(findMovies);
-      } catch (error) {
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
+  }, [searchParams]);
+
+  const fetchMovies = async query => {
+    setLoading(true);
+    try {
+      const res = await axios.get(
+        `https://api.themoviedb.org/3/search/movie?query=${query}&language=en-US`,
+        {
+          headers: {
+            Authorization:
+              'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MmVlMzg2YmYwOTQ2NGY4MTA5NGJmODdkODY3MzdiMyIsInN1YiI6IjY2MTZlNjdmY2E0ZjY3MDE3ZGM4ZTE5YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Qxul817j6sw0997Y7ybzWX3wvENEAgtOY9261cQrZd4',
+            accept: 'application/json',
+          },
+        }
+      );
+      setMovies(res.data.results);
+    } catch (error) {
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-    fetchMoviesByName();
-  }, [queryParam, setLoading, setError]);
+  };
+
+  const handleSearchInputChange = event => {
+    setSearchQuery(event.target.value);
+  };
+
+  const handleFormSubmit = event => {
+    event.preventDefault();
+    setSearchParams({ search: searchQuery });
+  };
 
   return (
-    <>
-      <MovieSearch updateQueryParams={updateQueryParams} />
-      {movies.length > 0 && <MovieList movies={movies} />}
+    <div>
+      <form onSubmit={handleFormSubmit} className={css['form']}>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={handleSearchInputChange}
+          placeholder="Search movies by title"
+          className={css['input']}
+        />
+        <button type="submit" className={css['btn-submit']}>
+          Search
+        </button>
+      </form>
       {loading && <Loader />}
-      {error && <ErrorMessage />}
-    </>
+      {error && <p>Error: {error}</p>}
+      {!loading && !error && <MovieList movies={movies} />}
+    </div>
   );
-};
-
-export default MoviesPage;
+}

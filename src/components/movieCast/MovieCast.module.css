@@ -1,8 +1,22 @@
-.actorList {
-  display: flex;
-  column-gap: 24px;
+.casts-title {
+  margin-bottom: 20px;
 }
 
-.actorListItem {
-  flex-basis: 120px;
+.cast-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+}
+
+.cast-info {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  width: 250px;
+}
+
+.no-photo-img {
+  width: 250px;
+  height: 250px;
 }

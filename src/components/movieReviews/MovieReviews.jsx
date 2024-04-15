@@ -1,51 +1,57 @@
-import css from './MovieReviews.module.css';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getMovieReviews } from '/src/components/config';
-import MovieReviewsItem from '../movieReviewsItem/MovieReviewsItem';
-import Loader from '../loader/Loader';
-import ErrorMessage from '../errorMessage/ErrorMessage';
+import axios from 'axios';
+import img from '../../png/no-review.png';
+import css from './MovieReviews.module.css';
 
-const MovieReviews = () => {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const { movieId } = useParams();
+export default function MovieReviews() {
   const [reviews, setReviews] = useState([]);
+  const [error, setError] = useState(null);
+  const { movieId } = useParams();
 
   useEffect(() => {
-    const fetchMovieReviews = async () => {
+    const fetchReviews = async () => {
       try {
-        setLoading(true);
-        setError(false);
-        const reviews = await getMovieReviews(movieId);
-        setReviews(reviews.slice(0, 3));
-        console.log(reviews);
+        const res = await axios.get(
+          `https://api.themoviedb.org/3/movie/${movieId}/reviews`,
+          {
+            headers: {
+              Authorization:
+                'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI1MmVlMzg2YmYwOTQ2NGY4MTA5NGJmODdkODY3MzdiMyIsInN1YiI6IjY2MTZlNjdmY2E0ZjY3MDE3ZGM4ZTE5YiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Qxul817j6sw0997Y7ybzWX3wvENEAgtOY9261cQrZd4',
+            },
+          }
+        );
+        setReviews(res.data.results);
       } catch (error) {
-        setError(true);
-      } finally {
-        setLoading(false);
+        console.log('Error: ', error);
+        setError('Ooops, something went wrong, try later...', error);
       }
     };
-    fetchMovieReviews();
-  }, [movieId, setLoading, setError, setReviews]);
+    fetchReviews();
+  }, [movieId]);
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
-    <>
+    <div>
+      <h2 className={css['reviews-title']}>Reviews</h2>
       {reviews.length > 0 ? (
-        <ul className={css.reviewList}>
-          {reviews.map(review => (
-            <li key={review.id} className={css.reviewListItem}>
-              <MovieReviewsItem review={review} />
+        <ul className={css['review-list']}>
+          {reviews.map((review, idx) => (
+            <li key={idx} className={css['review-comment']}>
+              <p className={css['author']}>{review.author}</p>
+              <p>{review.content}</p>
             </li>
           ))}
         </ul>
       ) : (
-        <p>No reviews available.</p>
+        <p className={css['no-reviews']}>
+          No reviews yet
+          <img src={img} className={css['img-rew']} />
+        </p>
       )}
-      {loading && <Loader />}
-      {error && <ErrorMessage />}
-    </>
+    </div>
   );
-};
-
-export default MovieReviews;
+}
