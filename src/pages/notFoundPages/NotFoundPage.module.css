@@ -1,6 +1,4 @@
-
 .notFoundLink {
-    color: blue;
-    transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
+  color: rgb(227, 227, 234);
+  transition: color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}

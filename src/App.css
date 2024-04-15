@@ -1,8 +1,8 @@
-.appContainer {
+.appcont {
   max-width: 1280px;
   display: flex;
   flex-direction: column;
   padding: 20px 0;
   margin: 0;
-  background-color: aquamarine;
+  background-color: linear-gradient(to right, #ff0000, #0000ff);
 }
