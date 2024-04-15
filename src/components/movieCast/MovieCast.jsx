@@ -2,7 +2,7 @@ import css from './MovieCast.module.css';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getMovieCast } from '/src/components/config';
-import MovieCastItem from '../../components/MovieCastItem/MovieCastItem';
+import MovieCastItem from '../movieCastItem/MovieCastItem';
 import Loader from '../loader/Loader';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
