@@ -1,10 +1,10 @@
-import css from "./MovieCast.module.css";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { getMovieCast } from "/src/components/config";
-import MovieCastItem from "../../components/MovieCastItem/MovieCastItem";
-import Loader from "../loader/Loader";
-import ErrorMessage from "../errorMessage/ErrorMessage";
+import css from './MovieCast.module.css';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { getMovieCast } from '/src/components/config';
+import MovieCastItem from '../../components/MovieCastItem/MovieCastItem';
+import Loader from '../loader/Loader';
+import ErrorMessage from '../errorMessage/ErrorMessage';
 
 const MovieCast = () => {
   const [loading, setLoading] = useState(false);
@@ -33,7 +33,7 @@ const MovieCast = () => {
     <>
       {actors.length > 0 ? (
         <ul className={css.actorList}>
-          {actors.map((actor) => (
+          {actors.map(actor => (
             <li key={actor.id} className={css.actorListItem}>
               <MovieCastItem actor={actor} />
             </li>
