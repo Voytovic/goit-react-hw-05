@@ -5,7 +5,7 @@ export default function Navigation() {
   return (
     <div className={css['header-page']}>
       <NavLink
-        exact
+        exact="true"
         to="/"
         className={({ isActive }) => (isActive ? css.active : css.links)}
       >
